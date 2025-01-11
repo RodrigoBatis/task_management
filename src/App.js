@@ -26,7 +26,7 @@ function App() {
 
     const getTasks = async () => {
       try {
-        const res = await axios.get("http://localhost:8080");
+        const res = await axios.get("http://localhost:8080/tasks");
         setTasks(res.data.sort((a, b) => (a.title > b.title ? 1 : -1)));
       } catch (error) {
         toast.error(error);
@@ -41,8 +41,8 @@ function App() {
       <>
         <Container>
           <Title>Gerenciador de Tarefas</Title>
-          <Form/>
-          <Grid tasks={tasks}/>
+          <Form onEdit={onEdit} setOnEdit={setOnEdit} getTasks={getTasks}/>
+          <Grid tasks={tasks} setTasks={setTasks} setOnEdit={setOnEdit}/>
         </Container>
         <ToastContainer autoClose={3000} position={toast.POSITION.BOTTOM_LEFT} />
         <GlobalStyle/>

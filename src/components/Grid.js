@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import styled from "styled-components";
-import {FaTrash, FaEdit} from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const Table = styled.table`
@@ -15,7 +15,7 @@ const Table = styled.table`
   word-break: break-all;
 `;
 
-export const Thead = styled.thead``; 
+export const Thead = styled.thead``;
 
 export const Tr = styled.tr``;
 
@@ -41,33 +41,53 @@ export const Td = styled.td`
   }
 `;
 
-const Grid = ({tasks}) => {
-   return(
-      <Table>
-         <Thead>
-            <Tr>
-               <Th>Título</Th>
-               <Th>Descrição</Th>
-               <Th>Estado</Th>
-            </Tr>
-         </Thead>
-         <Tbody>
-            {tasks.map((item, i) => (
-               <Tr key={i}>
-                  <Td width="30%">{item.title}</Td>
-                  <Td width="30%">{item.description}</Td>
-                  <Td width="30%">{item.status}</Td>
-                  <Td alignCenter width="5%">
-                     <FaEdit/>
-                  </Td>
-                  <Td alignCenter width="5%">
-                     <FaTrash/>
-                  </Td>
-               </Tr>
-            ))}
-         </Tbody>
-      </Table>
-   );
-}
+const Grid = ({ tasks, setTasks, setOnEdit }) => {
+  const handleEdit = (item) => {
+    setOnEdit(item);
+  };
+
+  const handleDelete = async (id) => {
+    await axios
+      .delete(`http://localhost:8080/tasks/${id}`)
+      .then(({ data }) => {
+        const newArray = tasks.filter((task) => task.id !== id);
+
+        setTasks(newArray);
+        toast.success(data);
+      })
+      .catch(({ data }) => toast.error(data));
+
+    setOnEdit(null);
+  };
+
+  return (
+    <Table>
+      <Thead>
+        <Tr>
+          <Th>Título</Th>
+          <Th>Descrição</Th>
+          <Th>Estado</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {tasks.map((item, i) => (
+          <Tr key={i}>
+            <Td width="30%">{item.title}</Td>
+            <Td width="30%">{item.description}</Td>
+            <Td width="30%">
+              {item.status === 1 ? "Concluído" : "Pendente"}
+            </Td>
+            <Td alignCenter width="5%">
+              <FaEdit onClick={() => handleEdit(item)} />
+            </Td>
+            <Td alignCenter width="5%">
+              <FaTrash onClick={() => handleDelete(item.id)} />
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  );
+};
 
 export default Grid;
